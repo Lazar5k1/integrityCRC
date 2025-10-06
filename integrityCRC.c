@@ -28,7 +28,9 @@ Due Date: Friday, October 17, 2025 at 11:55 PM ET
 #include <ctype.h>
 
 void processPlainText(FILE *plaintext, char **plainContent, char **message);
-void toDecimal(char *message, int **decMessage);
+void toDecimal(char *message);
+void toHex(char *message);
+void toBinary(char *message);
 
 int main(int argc, char* argv []){
     if(argc != 3){
@@ -43,8 +45,6 @@ int main(int argc, char* argv []){
     processPlainText(plaintext, &plainContent, &message);
 // yoinks the text from the text file in argv[1], stores it into plainContent, then takes out all the characters that aren't A-Z or a-z and stores that into message
 
-    int *decMessage;
-    toDecimal(message, &decMessage);
 
 // start printing
     printf("The original message:\n");
@@ -55,19 +55,13 @@ int main(int argc, char* argv []){
     for(size_t i = 0; i < strlen(message); i++){
         printf("%c", message[i]);
     }
-    printf("\n\nThe decimal representation of the preprocessed message:\n");
-    for(size_t i = 0; i < strlen(message) - 1; i++){
-        printf("%d ", decMessage[i]);
-    }
-    printf("\n\nThe hex representation of the preprocessed message:\n");
-    for(size_t i = 0; i < strlen(message) - 1; i++){
-        printf("%d ", decMessage[i]);
-    }
+    toDecimal(message);
+    toHex(message);
+    toBinary(message);
 
     
     free(plainContent);
     free(message);
-    free(decMessage);
     fclose(plaintext);
 
     return 0;
@@ -98,9 +92,27 @@ void processPlainText(FILE *plainText, char **plainContent, char **message){
 // capitalizes all a-z characters and deletes everything else
 }
 
-void toDecimal(char *message, int **decMessage){
-    *decMessage = malloc((strlen(message) - 1) * sizeof(int));
-    for(size_t i = 0; i < (strlen(message) - 1); i++){
-        (*decMessage)[i] = (int)message[i];
+void toDecimal(char *message){
+    printf("\n\nThe decimal representation of the preprocessed message:\n");
+    for(int i = 0; i < strlen(message); i++){
+        printf("%d ", (int)message[i]);
+    }
+}
+
+void toHex(char *message){
+    printf("\n\nThe hex representation of the preprocessed message:\n");
+    for(int i = 0; i < strlen(message); i++){
+        printf("%X ", (int)message[i]);
+    }
+}
+
+void toBinary(char *message){
+    printf("\n\nThe binary representation of the preprocessed message:\n");
+    
+    for(int i = 0; i < strlen(message); i++){
+        for(int j =7; j >= 0; j--){
+        printf("%u", (message[i] >> j) & 1);
+    }
+    printf(" ");
     }
 }
