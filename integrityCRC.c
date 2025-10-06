@@ -31,10 +31,17 @@ void processPlainText(FILE *plaintext, char **plainContent, char **message);
 void toDecimal(char *message);
 void toHex(char *message);
 void toBinary(char *message);
+void pad(char *message, int crcArg);
+void processCRC(char *message, char **crcHex);
 
 int main(int argc, char* argv []){
     if(argc != 3){
-        printf("reenter command");
+        printf("reenter command: incorrect number of arguments");
+        return 1;
+    }
+    int crcArg = (int)((*argv[2]) - '0');
+    if(crcArg != 3 && crcArg != 4 && crcArg != 8){
+        printf("reenter command: crcArg value wrong");
         return 1;
     }
 
@@ -58,7 +65,9 @@ int main(int argc, char* argv []){
     toDecimal(message);
     toHex(message);
     toBinary(message);
-
+    pad(message, crcArg);
+    char *crcHex;
+    processCRC(message, &crcHex);
     
     free(plainContent);
     free(message);
@@ -108,11 +117,47 @@ void toHex(char *message){
 
 void toBinary(char *message){
     printf("\n\nThe binary representation of the preprocessed message:\n");
-    
     for(int i = 0; i < strlen(message); i++){
         for(int j =7; j >= 0; j--){
         printf("%u", (message[i] >> j) & 1);
     }
     printf(" ");
     }
+}
+
+void pad(char *message, int crcArg){
+    if(crcArg == 3){
+        printf("\n\nThe binary representation of the original message prepared for CRC computation (padded with 3 zeros):\n");
+        for(int i = 0; i < strlen(message); i++){
+            for(int j =7; j >= 0; j--){
+            printf("%u", (message[i] >> j) & 1);
+        }
+        printf(" ");
+        }
+        printf("000");
+    }
+    else if(crcArg == 4){
+        printf("\n\nThe binary representation of the original message prepared for CRC computation (padded with 4 zeros):\n");
+        for(int i = 0; i < strlen(message); i++){
+            for(int j =7; j >= 0; j--){
+            printf("%u", (message[i] >> j) & 1);
+        }
+        printf(" ");
+        }
+        printf("0000");
+    }
+    else if(crcArg == 8){
+        printf("\n\nThe binary representation of the original message prepared for CRC computation (padded with 8 zeros):\n");
+        for(int i = 0; i < strlen(message); i++){
+            for(int j =7; j >= 0; j--){
+            printf("%u", (message[i] >> j) & 1);
+        }
+        printf(" ");
+        }
+        printf("00000000");
+    }
+}
+
+void processCRC(char *message, char **crcHex){
+    
 }
