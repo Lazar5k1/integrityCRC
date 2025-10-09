@@ -30,9 +30,9 @@ Due Date: Friday, October 17, 2025 at 11:55 PM ET
 void processPlainText(FILE *plaintext, char **plainContent, char **message);
 void toDecimal(char *message);
 void toHex(char *message);
-void toBinary(char *message);
-void pad(char *message, int crcArg);
-void processCRC(char *message, char **crcHex);
+void printBinary(char *message);
+void printPad(char *message, int crcArg);
+void processCRC(char *message, char **binMessage, int crcArg);
 
 int main(int argc, char* argv []){
     if(argc != 3){
@@ -64,10 +64,10 @@ int main(int argc, char* argv []){
     }
     toDecimal(message);
     toHex(message);
-    toBinary(message);
-    pad(message, crcArg);
-    char *crcHex;
-    processCRC(message, &crcHex);
+    printBinary(message);
+    printPad(message, crcArg);
+    char *binMessage;
+    processCRC(message, &binMessage, crcArg);
     
     free(plainContent);
     free(message);
@@ -115,17 +115,18 @@ void toHex(char *message){
     }
 }
 
-void toBinary(char *message){
+void printBinary(char *message){
+//print
     printf("\n\nThe binary representation of the preprocessed message:\n");
     for(int i = 0; i < strlen(message); i++){
         for(int j =7; j >= 0; j--){
-        printf("%u", (message[i] >> j) & 1);
-    }
-    printf(" ");
+            printf("%u", (message[i] >> j) & 1);
+        }
+        printf(" ");
     }
 }
 
-void pad(char *message, int crcArg){
+void printPad(char *message, int crcArg){
     if(crcArg == 3){
         printf("\n\nThe binary representation of the original message prepared for CRC computation (padded with 3 zeros):\n");
         for(int i = 0; i < strlen(message); i++){
@@ -158,6 +159,20 @@ void pad(char *message, int crcArg){
     }
 }
 
-void processCRC(char *message, char **crcHex){
+void processCRC(char *message, char **binMessage, int crcArg){
+    int binaryLength = strlen(message) * 8;
+    *binMessage = malloc(binaryLength + crcArg + 1);
+    int bit = 0;
+    for(int i = 0; i < strlen(message); i++){
+        for(int j =7; j >= 0; j--){
+            *binMessage[bit++] = ((message[i] >> j) & 1) ? '1' : '0';
+        }
+    }
+    for(int i = 0; i < crcArg; i++){
+        *binMessage[i + (binaryLength)] = '0';
+    }
+    *binMessage[(binaryLength) + crcArg + 1] = '\0';
+// message is now converted to binary and padded with crc 0's
+
     
 }
