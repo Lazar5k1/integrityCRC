@@ -26,6 +26,7 @@ Due Date: Friday, October 17, 2025 at 11:55 PM ET
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 void processPlainText(FILE *plaintext, char **plainContent, char **message);
 void toDecimal(char *message);
@@ -33,6 +34,7 @@ void toHex(char *message);
 void printBinary(char *message);
 void printPad(char *message, int crcArg);
 void processCRC(char *message, char **binMessage, int crcArg, char **crcValue);
+void crcToDec(char *crcValue, int *crcDec);
 
 int main(int argc, char* argv []){
     if(argc != 3){
@@ -77,6 +79,28 @@ int main(int argc, char* argv []){
     for(int i = 0; i < crcArg; i++){
         printf("%c", crcValue[i]);
     }
+    int crcDec = 0;
+    crcToDec(crcValue, &crcDec);
+    if(crcArg == 8){
+        printf("\n\nThe crc value for the chosen crc algorithm in hex:\n");
+        printf("%02X", crcDec);
+        printf("\n\nThe final message is going to be transmitted in hex:\n");
+        for(int i = 0; i < strlen(message); i++){
+            printf("%X", (int)message[i]);
+        }
+        printf("%02X", crcDec);
+    }
+    else{
+    printf("\n\nThe crc value for the chosen crc algorithm in hex:\n");
+    printf("%X", crcDec);
+    printf("\n\nThe final message is going to be transmitted in hex:\n");
+    for(int i = 0; i < strlen(message); i++){
+        printf("%X", (int)message[i]);
+    }
+    printf("%X", crcDec);
+    }
+
+
     
     free(plainContent);
     free(message);
@@ -220,4 +244,14 @@ void processCRC(char *message, char **binMessage, int crcArg, char **crcValue){
 // crc value gets the remainder of the xor division
     free(polynomial);
     free(tempBin);
+}
+
+void crcToDec(char *crcValue, int *crcDec){
+    int j = 0;
+    for(int i = strlen(crcValue) - 1; i >= 0; i--){
+        if(crcValue[i] == '1'){
+            *crcDec += pow(2, j);
+        }
+        j++;
+    }
 }
